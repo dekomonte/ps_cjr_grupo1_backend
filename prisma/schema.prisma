@@ -13,3 +13,51 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Professor {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  departamento String
+  disciplinaID Int
+  createdAt    DateTime
+  updatedAt    DateTime
+}
+
+model Disciplina {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  professoresID String
+  createdAt     DateTime
+  updatedAt     DateTime
+}
+
+model Avaliacao {
+  id           Int      @id @default(autoincrement())
+  usuarioID    Int
+  professorID  Int
+  disciplinaID Int
+  conteudo     String
+  createdAt    DateTime
+  updatedAt    DateTime
+}
+
+model Comentarios {
+  id          Int      @id @default(autoincrement())
+  usuarioID   Int
+  avaliacaoID Int
+  conteudo    String
+  createdAt   DateTime
+  updatedAt   DateTime
+}
+
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  email        String
+  senha        String
+  departamento String
+  curso        String
+  foto_perfil  Bytes
+  createdAt    DateTime
+  updatedAt    DateTime
+}
