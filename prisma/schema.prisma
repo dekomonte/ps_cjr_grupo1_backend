@@ -15,49 +15,60 @@ datasource db {
 }
 
 model Professor {
-  id           Int      @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   nome         String
   departamento String
   disciplinaID Int
-  createdAt    DateTime
-  updatedAt    DateTime
+  disciplina   Disciplina  @relation(fields: [disciplinaID], references: [id])
+  avaliacao    Avaliacao[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model Disciplina {
-  id            Int      @id @default(autoincrement())
-  nome          String
-  professoresID String
-  createdAt     DateTime
-  updatedAt     DateTime
+  id          Int         @id @default(autoincrement())
+  nome        String
+  professores Professor[]
+  avaliacoes  Avaliacao[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Avaliacao {
-  id           Int      @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   usuarioID    Int
   professorID  Int
   disciplinaID Int
   conteudo     String
-  createdAt    DateTime
-  updatedAt    DateTime
+  professor    Professor     @relation(fields: [professorID], references: [id])
+  disciplina   Disciplina    @relation(fields: [disciplinaID], references: [id])
+  usuario      Usuario       @relation(fields: [usuarioID], references: [id])
+  comentarios  Comentarios[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Comentarios {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   usuarioID   Int
-  avaliacaoID Int
+  usuario     Usuario   @relation(fields: [usuarioID], references: [id])
   conteudo    String
-  createdAt   DateTime
-  updatedAt   DateTime
+  avaliacaoID Int
+  avaliacao   Avaliacao @relation(fields: [avaliacaoID], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Usuario {
-  id           Int      @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   nome         String
-  email        String
+  email        String        @unique
   senha        String
   departamento String
   curso        String
   foto_perfil  Bytes
-  createdAt    DateTime
-  updatedAt    DateTime
+  avaliacao    Avaliacao[]
+  comentarios  Comentarios[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
