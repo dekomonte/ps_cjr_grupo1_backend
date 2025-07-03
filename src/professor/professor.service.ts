@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProfessorDto } from './dto/create-professor.dto';
 import { UpdateProfessorDto } from './dto/update-professor.dto';
 
 @Injectable()
 export class ProfessorService {
-  create(createProfessorDto: CreateProfessorDto) {
-    return 'This action adds a new professor';
+  constructor(private prisma: PrismaService) {}
+
+  create(data: CreateProfessorDto) {
+    return this.prisma.professor.create({ data });
   }
 
   findAll() {
-    return `This action returns all professor`;
+    return this.prisma.professor.findMany({
+      include: {
+        disciplina: true,
+        avaliacao: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} professor`;
+  async findOne(id: number) {
+    const professor = await this.prisma.professor.findUnique({
+      where: { id },
+      include: {
+        disciplina: true,
+        avaliacao: true,
+      },
+    });
+    if (!professor) throw new NotFoundException('Professor não encontrado');
+    return professor;
   }
 
-  update(id: number, updateProfessorDto: UpdateProfessorDto) {
-    return `This action updates a #${id} professor`;
+  update(id: number, data: UpdateProfessorDto) {
+    return this.prisma.professor.update({ where: { id }, data });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} professor`;
+    return this.prisma.professor.delete({ where: { id } });
   }
 }

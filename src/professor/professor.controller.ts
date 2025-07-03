@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ProfessorService } from './professor.service';
 import { CreateProfessorDto } from './dto/create-professor.dto';
 import { UpdateProfessorDto } from './dto/update-professor.dto';
@@ -18,17 +27,20 @@ export class ProfessorController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.professorService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.professorService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfessorDto: UpdateProfessorDto) {
-    return this.professorService.update(+id, updateProfessorDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProfessorDto: UpdateProfessorDto,
+  ) {
+    return this.professorService.update(id, updateProfessorDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.professorService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.professorService.remove(id);
   }
 }

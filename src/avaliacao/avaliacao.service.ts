@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAvaliacaoDto } from './dto/create-avaliacao.dto';
 import { UpdateAvaliacaoDto } from './dto/update-avaliacao.dto';
 
 @Injectable()
 export class AvaliacaoService {
-  create(createAvaliacaoDto: CreateAvaliacaoDto) {
-    return 'This action adds a new avaliacao';
+  constructor(private prisma: PrismaService) {}
+
+  create(data: CreateAvaliacaoDto) {
+    return this.prisma.avaliacao.create({ data });
   }
 
   findAll() {
-    return `This action returns all avaliacao`;
+    return this.prisma.avaliacao.findMany({
+      include: {
+        usuario: true,
+        professor: true,
+        disciplina: true,
+        comentarios: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} avaliacao`;
+  async findOne(id: number) {
+    const avaliacao = await this.prisma.avaliacao.findUnique({
+      where: { id },
+      include: {
+        usuario: true,
+        professor: true,
+        disciplina: true,
+        comentarios: true,
+      },
+    });
+    if (!avaliacao) throw new NotFoundException('Avaliação não encontrada');
+    return avaliacao;
   }
 
-  update(id: number, updateAvaliacaoDto: UpdateAvaliacaoDto) {
-    return `This action updates a #${id} avaliacao`;
+  update(id: number, data: UpdateAvaliacaoDto) {
+    return this.prisma.avaliacao.update({ where: { id }, data });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} avaliacao`;
+    return this.prisma.avaliacao.delete({ where: { id } });
   }
 }

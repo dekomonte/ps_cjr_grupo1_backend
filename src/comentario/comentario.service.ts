@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateComentarioDto } from './dto/create-comentario.dto';
 import { UpdateComentarioDto } from './dto/update-comentario.dto';
 
 @Injectable()
 export class ComentarioService {
-  create(createComentarioDto: CreateComentarioDto) {
-    return 'This action adds a new comentario';
+  constructor(private prisma: PrismaService) {}
+
+  create(data: CreateComentarioDto) {
+    return this.prisma.comentarios.create({ data });
   }
 
   findAll() {
-    return `This action returns all comentario`;
+    return this.prisma.comentarios.findMany({
+      include: {
+        usuario: true,
+        avaliacao: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comentario`;
+  async findOne(id: number) {
+    const comentario = await this.prisma.comentarios.findUnique({
+      where: { id },
+      include: {
+        usuario: true,
+        avaliacao: true,
+      },
+    });
+    if (!comentario) throw new NotFoundException('Comentário não encontrado');
+    return comentario;
   }
 
-  update(id: number, updateComentarioDto: UpdateComentarioDto) {
-    return `This action updates a #${id} comentario`;
+  update(id: number, data: UpdateComentarioDto) {
+    return this.prisma.comentarios.update({ where: { id }, data });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} comentario`;
+    return this.prisma.comentarios.delete({ where: { id } });
   }
 }
