@@ -11,7 +11,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { File } from 'multer'; // import do tipo File do multer
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,9 +23,10 @@ export class UserController {
   @UseInterceptors(FileInterceptor('foto_perfil'))
   async create(
     @Body() createUserDto: CreateUserDto,
-    @UploadedFile() file?: File, // usando o tipo File do multer aqui
+    @UploadedFile() file?: Express.Multer.File, // <- corrigido aqui
   ) {
     if (file) {
+      // salva a imagem como bytea (Buffer) no DTO
       createUserDto.foto_perfil = new Uint8Array(file.buffer);
     }
     return this.userService.create(createUserDto);

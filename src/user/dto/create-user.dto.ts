@@ -18,5 +18,6 @@ export class CreateUserDto {
   curso: string;
 
   @IsOptional()
+  // Esse campo vem do arquivo de upload e é setado no controller manualmente
   foto_perfil?: Uint8Array;
 }

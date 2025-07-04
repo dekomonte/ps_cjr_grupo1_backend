@@ -7,8 +7,18 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  create(data: CreateUserDto) {
-    return this.prisma.usuario.create({ data });
+  async create(data: CreateUserDto) {
+    // Prisma aceita Buffer direto em campos do tipo Bytes (bytea)
+    return this.prisma.usuario.create({
+      data: {
+        nome: data.nome,
+        email: data.email,
+        senha: data.senha,
+        curso: data.curso,
+        departamento: data.departamento,
+        foto_perfil: data.foto_perfil ? Buffer.from(data.foto_perfil) : null,
+      },
+    });
   }
 
   findAll() {
