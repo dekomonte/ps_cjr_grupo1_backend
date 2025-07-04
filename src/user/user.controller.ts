@@ -23,13 +23,20 @@ export class UserController {
   @UseInterceptors(FileInterceptor('foto_perfil'))
   async create(
     @Body() createUserDto: CreateUserDto,
-    @UploadedFile() file?: Express.Multer.File, // <- corrigido aqui
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     if (file) {
-      // salva a imagem como bytea (Buffer) no DTO
       createUserDto.foto_perfil = new Uint8Array(file.buffer);
     }
     return this.userService.create(createUserDto);
+  }
+
+  @Post('login')
+  async login(
+    @Body() body: { email: string; senha: string },
+  ) {
+    const { email, senha } = body;
+    return this.userService.login(email, senha);
   }
 
   @Get()
