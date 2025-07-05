@@ -7,10 +7,7 @@ import {
   Param,
   Delete,
   ParseIntPipe,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,21 +17,12 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('foto_perfil'))
-  async create(
-    @Body() createUserDto: CreateUserDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    if (file) {
-      createUserDto.foto_perfil = new Uint8Array(file.buffer);
-    }
+  async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Post('login')
-  async login(
-    @Body() body: { email: string; senha: string },
-  ) {
+  async login(@Body() body: { email: string; senha: string }) {
     const { email, senha } = body;
     return this.userService.login(email, senha);
   }
