@@ -41,7 +41,24 @@ export class UserController {
   @Post('login')
   async login(@Body() body: { email: string; senha: string }) {
     const { email, senha } = body;
-    return this.userService.login(email, senha);
+    const user = await this.userService.login(email, senha);
+    
+    if (!user) {
+      return { message: 'Credenciais inválidas' };
+    }
+    
+    const token = this.userService.generateSimpleToken(user);
+    
+    return {
+      message: 'Login realizado com sucesso',
+      token,
+      id: user.id,
+      nome: user.nome,
+      email: user.email,
+      curso: user.curso,
+      departamento: user.departamento,
+      foto_perfil: user.foto_perfil,
+    };
   }
 
   @Get()
