@@ -43,4 +43,21 @@ export class AvaliacaoService {
   remove(id: number) {
     return this.prisma.avaliacao.delete({ where: { id } });
   }
+  
+  async findByUsuario(usuarioID: number) {
+    const avaliacoes = await this.prisma.avaliacao.findMany({
+      where: { usuarioID },
+      include: {
+        usuario: true,
+        professor: true,
+        disciplina: true,
+        comentarios: true,
+      },
+    });
+    
+    if (!avaliacoes || avaliacoes.length === 0) {
+      throw new NotFoundException('Nenhuma avaliação encontrada para este usuário');
+    }
+    return avaliacoes;
+  }
 }

@@ -7,11 +7,11 @@ import {
   Param,
   Delete,
   ParseIntPipe,
-  UploadedFile,
   UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { File } from 'multer'; // import do tipo File do multer
+
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -23,13 +23,42 @@ export class UserController {
   @Post()
   @UseInterceptors(FileInterceptor('foto_perfil'))
   async create(
-    @Body() createUserDto: CreateUserDto,
-    @UploadedFile() file?: File, // usando o tipo File do multer aqui
+    @Body() body: any,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    if (file) {
-      createUserDto.foto_perfil = new Uint8Array(file.buffer);
-    }
+    const createUserDto: CreateUserDto = {
+      nome: body.nome?.toString(),
+      email: body.email?.toString(),
+      senha: body.senha?.toString(),
+      curso: body.curso?.toString(),
+      departamento: body.departamento?.toString(),
+      foto_perfil: file ? new Uint8Array(file.buffer) : undefined,
+    };
+
     return this.userService.create(createUserDto);
+  }
+
+  @Post('login')
+  async login(@Body() body: { email: string; senha: string }) {
+    const { email, senha } = body;
+    const user = await this.userService.login(email, senha);
+    
+    if (!user) {
+      return { message: 'Credenciais inválidas' };
+    }
+    
+    const token = this.userService.generateSimpleToken(user);
+    
+    return {
+      message: 'Login realizado com sucesso',
+      token,
+      id: user.id,
+      nome: user.nome,
+      email: user.email,
+      curso: user.curso,
+      departamento: user.departamento,
+      foto_perfil: user.foto_perfil,
+    };
   }
 
   @Get()
