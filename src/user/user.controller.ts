@@ -72,10 +72,21 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(
+  @UseInterceptors(FileInterceptor('foto_perfil'))
+  async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: any,
   ) {
+    const updateUserDto: UpdateUserDto = {
+      nome: body.nome?.toString(),
+      email: body.email?.toString(),
+      senha: body.senha?.toString(),
+      senhaAtual: body.senhaAtual?.toString(),
+      curso: body.curso?.toString(),
+      departamento: body.departamento?.toString(),
+      foto_perfil: file ? new Uint8Array(file.buffer) : undefined,
+    };
     return this.userService.update(id, updateUserDto);
   }
 

@@ -7,8 +7,17 @@ import { UpdateAvaliacaoDto } from './dto/update-avaliacao.dto';
 export class AvaliacaoService {
   constructor(private prisma: PrismaService) {}
 
-  create(data: CreateAvaliacaoDto) {
-    return this.prisma.avaliacao.create({ data });
+  async create(createAvaliacaoDto: CreateAvaliacaoDto, usuarioID: number) {
+    const { professorID, disciplinaID, conteudo } = createAvaliacaoDto;
+
+    return this.prisma.avaliacao.create({
+      data: {
+        professorID,
+        disciplinaID,
+        conteudo,
+        usuarioID, // pegar do token
+      },
+    });
   }
 
   findAll() {
@@ -43,7 +52,7 @@ export class AvaliacaoService {
   remove(id: number) {
     return this.prisma.avaliacao.delete({ where: { id } });
   }
-  
+
   async findByUsuario(usuarioID: number) {
     const avaliacoes = await this.prisma.avaliacao.findMany({
       where: { usuarioID },
@@ -54,7 +63,7 @@ export class AvaliacaoService {
         comentarios: true,
       },
     });
-    
+
     if (!avaliacoes || avaliacoes.length === 0) {
       throw new NotFoundException('Nenhuma avaliação encontrada para este usuário');
     }

@@ -21,7 +21,7 @@ async function bootstrap() {
   // Configuração global do CORS (libera acesso do frontend)
   app.enableCors({
     origin: '*', // ou coloca a URL do front se quiser restringir
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true
   });
 

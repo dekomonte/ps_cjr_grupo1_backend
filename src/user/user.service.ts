@@ -42,10 +42,6 @@ export class UserService {
     return user;
   }
 
-  update(id: number, data: UpdateUserDto) {
-    return this.prisma.usuario.update({ where: { id }, data });
-  }
-
   remove(id: number) {
     return this.prisma.usuario.delete({ where: { id } });
   }
@@ -98,6 +94,35 @@ export class UserService {
       : null,
       token,
     };
+  }
+
+  async update(id: number, data: UpdateUserDto) {
+    const user = await this.prisma.usuario.findUnique({ where: { id } });
+    
+    if (!user) throw new NotFoundException('Usuário não encontrado');
+    
+    if (data.senha) {
+      if (!data.senhaAtual) {
+        throw new UnauthorizedException('Senha atual é obrigatória para alterar a senha');
+      }
+      if (user.senha !== data.senhaAtual) {
+        throw new UnauthorizedException('Senha atual incorreta');
+      }
+    }
+    
+    const updatedData: any = {
+      nome: data.nome,
+      email: data.email,
+      senha: data.senha,
+      curso: data.curso,
+      departamento: data.departamento,
+      ...(data.foto_perfil !== undefined && { foto_perfil: Buffer.from(data.foto_perfil) }),
+    };
+
+    return this.prisma.usuario.update({
+      where: { id },
+      data: updatedData,
+    });
   }
 
   generateSimpleToken(user: any): string {

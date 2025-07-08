@@ -11,15 +11,12 @@ import {
 import { AvaliacaoService } from './avaliacao.service';
 import { CreateAvaliacaoDto } from './dto/create-avaliacao.dto';
 import { UpdateAvaliacaoDto } from './dto/update-avaliacao.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 @Controller('avaliacao')
 export class AvaliacaoController {
   constructor(private readonly avaliacaoService: AvaliacaoService) {}
-
-  @Post()
-  create(@Body() createAvaliacaoDto: CreateAvaliacaoDto) {
-    return this.avaliacaoService.create(createAvaliacaoDto);
-  }
 
   @Get()
   findAll() {
