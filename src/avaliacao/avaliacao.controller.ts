@@ -28,6 +28,17 @@ export class AvaliacaoController {
     return this.avaliacaoService.findOne(id);
   }
 
+  @Get('usuario/:usuarioID')
+  async findByUsuarioID(@Param('usuarioID', ParseIntPipe) usuarioID: number) {
+    return this.avaliacaoService.findByUsuarioID(usuarioID);
+  }
+
+  @Post()
+  create(@Body() createAvaliacaoDto: CreateAvaliacaoDto) {
+    const usuarioID = 1; // TESTE!
+    return this.avaliacaoService.create(createAvaliacaoDto, usuarioID);
+  }
+
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

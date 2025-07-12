@@ -15,7 +15,7 @@ export class AvaliacaoService {
         professorID,
         disciplinaID,
         conteudo,
-        usuarioID, // pegar do token
+        usuarioID,
       },
     });
   }
@@ -53,7 +53,7 @@ export class AvaliacaoService {
     return this.prisma.avaliacao.delete({ where: { id } });
   }
 
-  async findByUsuario(usuarioID: number) {
+  async findByUsuarioID(usuarioID: number) {
     const avaliacoes = await this.prisma.avaliacao.findMany({
       where: { usuarioID },
       include: {
