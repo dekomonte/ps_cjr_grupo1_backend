@@ -42,36 +42,22 @@ export class UserService {
     return user;
   }
 
-  remove(id: number) {
-    return this.prisma.usuario.delete({ where: { id } });
+  async remove(id: number, senhaAtual: string) {
+    const user = await this.prisma.usuario.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException('Usuário não encontrado');
+    
+    if (user.senha !== senhaAtual) {
+      throw new UnauthorizedException('Senha atual incorreta');
+    }
+    
+    await this.prisma.usuario.delete({ where: { id } });
+    return { message: 'Usuário excluído com sucesso' };
   }
-
-  // LOGIN SIMPLES: busca pelo email e compara senha (sem criptografia ainda)
-  /*async login(email: string, senha: string) {
-    const user = await this.prisma.usuario.findUnique({
-      where: { email },
+  
+  async login(email: string, senha: string) {
+    const usuario = await this.prisma.usuario.findFirst({
+      where: { email, senha },
     });
-
-    if (!user) throw new UnauthorizedException('Usuário não encontrado');
-    if (user.senha !== senha) throw new UnauthorizedException('Senha incorreta');
-
-    return {
-      mensagem: 'Login bem-sucedido!',
-      id: user.id,
-      nome: user.nome,
-      email: user.email,
-      curso: user.curso,
-      departamento: user.departamento,
-      foto_perfil: user.foto_perfil
-      ? Buffer.from(user.foto_perfil).toString('base64')
-      : null,
-    };
-  }*/
-
-    async login(email: string, senha: string) {
-      const usuario = await this.prisma.usuario.findFirst({
-        where: { email, senha },
-      });
       
     if (!usuario) throw new Error("Email ou senha inválidos");
     
